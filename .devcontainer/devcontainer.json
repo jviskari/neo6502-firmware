@@ -1,0 +1,17 @@
+{
+    "name": "Neo6502",
+    "dockerFile": "Dockerfile",
+    "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+    },
+    "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "twxs.cmake",
+        "ms-vscode.cmake-tools",
+        "ms-python.python",
+        "bierner.markdown-mermaid",
+        "ms-vscode.makefile-tools",
+        "federico.64tass"
+    ]
+}
