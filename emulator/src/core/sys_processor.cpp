@@ -90,6 +90,15 @@ void CPUSaveArguments(int argc,char *argv[]) {
 
 //#include "binary.h"
 
+int static has_load_address(char* file_name) {
+    char* extension = strrchr(file_name, '.');
+    if (extension == NULL) {
+        return 0;
+    }
+    return strcmp(extension, ".prg") == 0;
+}
+
+
 void CPUReset(void) {
 	char command[128];
 	HWReset();																		// Reset Hardware
@@ -110,6 +119,46 @@ void CPUReset(void) {
 			}
 			fclose(f);
 			printf("Load %s to %x\n",command,a1);
+		}
+		else {
+			if (has_load_address(command)) {
+			   
+			    FILE *f = fopen(command,"rb"); 
+			    uint16_t loadAddress;
+				uint32_t currentAddress;
+
+			    if (f == NULL) {
+                    exit(fprintf(stderr,"Bad file %s",command));
+                }
+
+				if (fread(&loadAddress, sizeof(loadAddress), 1, f) != 1) {
+					    printf("Failed to read adress bytes from %s\n", command);
+					    fclose(f);
+					    exit(1);
+				}
+
+                currentAddress = loadAddress;
+
+                while ((fread(&cpuMemory[currentAddress], sizeof(uint8_t), 1, f) == 1) && (currentAddress < 0x10000)) {
+                     printf("%04X: %02X\n", currentAddress, cpuMemory[currentAddress]);
+					 
+					 if(currentAddress == 0xffff)
+					     break;
+					 currentAddress++;
+                }
+                fclose(f);
+
+				if (currentAddress < 0x10000) {
+				    printf("load: %s [%04X - %04X]\n", command, loadAddress, currentAddress);
+				}
+				else {
+					exit(fprintf(stderr,"Invalid load range:  %s [%04X - %04X]\n",command, loadAddress, currentAddress));
+				}
+
+			}
+			else {
+               exit(fprintf(stderr,"No load address specified:file %s",command));
+			}
 		}
 	}
 	resetProcessor();																// Reset CPU	

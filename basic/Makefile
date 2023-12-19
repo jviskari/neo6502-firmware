@@ -60,6 +60,9 @@ prelim: always
 
 wedge:
 	$(ASSEMBLER) wedge.asm -o build$(S)wedge.bin
+	$(ASSEMBLER) wedge.asm --cbm-prg -o build$(S)wedge.prg
+	$(CCOPY) build$(S)wedge.prg $(BINDIR)	
+	$(CCOPY) build$(S)wedge.bin $(BINDIR)	
 
 # ***************************************************************************************
 #
@@ -83,8 +86,10 @@ trun:tbuild
 
 build: prelim
 	$(ASSEMBLER) -DBASICBUILD=0 basic.asm -L build/basic.lst -o build/basic.bin
+	$(ASSEMBLER) --cbm-prg -DBASICBUILD=0 basic.asm -o build/basic.prg
 	$(PYTHON) $(BINDIR)hconvert.py build$(S)basic.bin build$(S)basic_binary.h basic 800
 	$(CCOPY) build$(S)basic_binary.h $(BINDIR)
+	$(CCOPY) build$(S)basic.prg $(BINDIR)
 
 run:build	
 	$(RUNCMD)
