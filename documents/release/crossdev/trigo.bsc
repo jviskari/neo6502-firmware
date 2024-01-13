@@ -1,0 +1,50 @@
+
+cls
+
+l=30
+
+ipx=320\2
+ipy=240\2
+
+dim spx(4)
+dim spy(4)
+
+spx(1)=ipx-(rand(50)+10)
+spy(1)=ipy-(rand(50)+10)
+
+spx(2)=ipx+(rand(50)+10)
+spy(2)=ipy+(rand(50)+10)
+
+spx(3)=ipx+(rand(50)+10)
+spy(3)=ipy-(rand(50)+10)
+
+spx(4)=ipx-(rand(50)+10)
+spy(4)=ipy+(rand(50)+10)
+
+
+repeat
+    r=10
+    for alpha=0 to 720
+        ang = 360*sin(alpha*0.5)
+
+        for ship=1 to 4
+            call draw_ship(spx(ship),spy(ship),ang)
+        next
+          
+    next
+until 0
+
+end
+
+proc draw_ship(px,py,angle)
+    local xa,ya,xb,yb,xc,yc
+    xa = px+l*cos(angle)
+    ya = py+l*sin(angle)
+    xb = px+l*cos(angle+120)
+    yb = py+l*sin(angle+120)
+    xc = px+l*cos(angle-120)
+    yc = py+l*sin(angle-120)
+
+    rect ink 0 solid px-l,py-l to px+l,py+l
+    line ink 2 xa,ya to xb,yb to xc,yc to xa,ya
+endproc
