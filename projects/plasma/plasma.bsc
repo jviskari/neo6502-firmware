@@ -1,0 +1,92 @@
+'
+' Plasmas with Palette Looping
+' https://lodev.org/cgtutor/plasma.html#Plasmas_with_Palette_Looping_
+' 
+dim pal(128)
+
+let r = 127 : g = 127 : b = 127
+let rd = 1 : gd = 1 : bd = 1
+
+let magic = 2 
+let m = 180\30
+let n = 180\60
+let p = 180\4
+let width = 320
+let height = 240
+let frme = 0
+
+'call setup()
+
+repeat 
+    call drawscreen()
+    frme = frme +1
+until false
+
+end
+
+proc setup()
+  local color
+  color = 0
+  print "setup"
+  for x = 0 to width-1 
+    for y = 0 to height-1 
+
+        color = int(127+127*sin(magic*x))
+        color = color + int(127+127*cos(magic*y))
+        color = color + int(127+127*sin(magic*sqr((x*x+y*y))))
+        color = color \ 4
+      
+        plot to x,y ink color    
+    next
+  next
+endproc
+
+proc drawscreen() 
+  local c
+  local s_1
+  local s_2
+
+  print "draw"
+
+  if r > 128 
+     rd = -rd
+  else 
+    if r < 0 : rd = -rd
+  endif
+
+  if g > 128 
+     gd = -gd
+  else 
+    if g < 0 : gd = -gd
+  endif
+
+  if b > 128 
+     bd = -bd
+  else 
+    if b < 0 : bd = -bd
+  endif
+
+
+  r = r+rd
+  g = g+gd  
+  b = b+bd
+  
+  for i = 0 to 128-1
+    s_1 = sin(i*m)
+    s_2 = sin(i*n+p)
+    
+    rcv = r+int(s_1*127)
+    gcv = g+int(s_2*127)
+    bcv = b+int(s_1*127)
+
+    palette i, rcv, gcv, bcv 
+  next 
+  
+  for x = 0 to width-1
+    for y = 0 to height-1 
+     indx = point(x,y)+frme) 
+     c=pal(indx)
+     plot x,y ink c
+    next
+  next      
+endproc
