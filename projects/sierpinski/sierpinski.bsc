@@ -1,0 +1,53 @@
+50 cls
+80 let gcolor=1:let order=6
+85 let posx=10:posy=235:size=275
+100 call main( )
+490 end
+499 '
+500 proc draw_triangle(x,y,s,c)
+501 h=int(s*sqr(3) /2)
+502 s2=int(s/2) +x
+503 xs=x+s
+504 yh=y-h
+520 line ink c x,y to xs,y
+530 line ink c x,y to s2,yh
+540 line ink c xs,y to s2,yh
+590 endproc
+599 '
+700 proc sierpinski(x,y,s,o)
+701 local s2
+702 local s4
+703 local h
+706 s2=int(s/2)
+707 s4=int(s/4)
+708 h=int(s*sqr(3) /4)
+710 if o=0
+715 gcolor= (gcolor+1) %15
+720 call draw_triangle(x,y,s,gcolor)
+730 else
+740 call sierpinski(x,y,s2,o-1)
+750 call sierpinski(x+s2,y,s2,o-1)
+760 call sierpinski(x+s4,y-h,s2,o-1)
+780 endif
+790 endproc
+800 proc main( )
+805 call title( )
+810 call sierpinski(posx,posy,size,6)
+811 call sierpinski(posx,posy,size,5)
+812 call sierpinski(posx,posy,size,4)
+815 call pal_cycle( )
+820 endproc
+1000 proc title( )
+1010 text"NeoBasic"ink 1 dim 1 to 210,50
+1011 text"Sierpinski"ink 1 dim 1 to 226,50+16
+1012 rect 205,45 to 290,80
+1100 endproc
+1200 proc pal_cycle( )
+1210 local r:r=0
+1220 local ctr:ctr=1000
+1250 repeat
+1260 ctr=ctr-1
+1270 r= (r+1) %255
+1280 palette 1,r,0,0
+1290 until ctr>0
+1500 endproc
