@@ -3,21 +3,20 @@
 
 let gcolor=1:let order=6
 let posx=10:posy=235:size=275
-
+let sqr_3 = sqr(3)
 call main()
 
 end
 
 
 proc triangle(x,y,s,c)
-    local h 
     local s2  
     local xs 
-    local yh 
-    h=s*sqr(3) \ 2
+    local yh
+
     s2=s\2 + x
     xs=x+s
-    yh=y-h
+    yh=y- ((s*sqr_3) \ 2)
     line ink c x,y to xs,y to x,y to s2,yh to xs,y to s2,yh
 endproc
 
@@ -27,7 +26,7 @@ proc sierpinski(x,y,s,o)
     local h
     s2=s \ 2
     s4=s \ 4 
-    h=s*sqr(3) \ 4
+    h=s*sqr_3 \ 4
 
     if o=0
         gcolor= (gcolor+1) %15
