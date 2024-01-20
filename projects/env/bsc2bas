@@ -1,0 +1,8 @@
+#
+#		Where executables are
+#
+NEO_6502_BINDIR=../bin
+#
+#		Convert source.bsc to a tokenised program
+#
+python3 ${NEO_6502_BINDIR}/makebasic.zip $1 -o$2
