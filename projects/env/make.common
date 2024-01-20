@@ -1,0 +1,22 @@
+NEO_BINDIR=../bin
+
+SRCS = $(wildcard *.bsc)
+PROGS = $(patsubst %.bsc,%.bas,$(SRCS))
+CONVERT=../env/bsc2bas
+EMU=$(NEO_BINDIR)/neo
+
+all: $(PROGS)
+
+%.bas: %.bsc
+	$(CONVERT) $< $@
+
+run: $(PROGS)
+	$(EMU) $<@page warm
+
+exec: $(PROGS)
+	$(EMU) $<@page exec
+
+clean:
+	rm -f $(PROGS)
+	rm -Rf storage
+	rm -f memory.dump
