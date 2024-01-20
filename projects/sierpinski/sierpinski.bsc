@@ -1,3 +1,6 @@
+' Sierpinski Triangle for Neo6502
+' written by Joonas Viskari 2024
+
 let gcolor=1:let order=6
 let posx=10:posy=235:size=275
 
@@ -6,27 +9,29 @@ call main()
 end
 
 
-proc draw_triangle(x,y,s,c)
-    h=int(s*sqr(3) /2)
-    s2=int(s/2) + x
+proc triangle(x,y,s,c)
+    local h 
+    local s2  
+    local xs 
+    local yh 
+    h=s*sqr(3) \ 2
+    s2=s\2 + x
     xs=x+s
     yh=y-h
-    line ink c x,y to xs,y
-    line ink c x,y to s2,yh
-    line ink c xs,y to s2,yh
+    line ink c x,y to xs,y to x,y to s2,yh to xs,y to s2,yh
 endproc
 
 proc sierpinski(x,y,s,o)
     local s2
     local s4
     local h
-    s2=int(s/2)
-    s4=int(s/4)
-    h=int(s*sqr(3) /4)
+    s2=s \ 2
+    s4=s \ 4 
+    h=s*sqr(3) \ 4
 
     if o=0
         gcolor= (gcolor+1) %15
-        call draw_triangle(x,y,s,gcolor)
+        call triangle(x,y,s,gcolor)
     else
         call sierpinski(x,y,s2,o-1)
         call sierpinski(x+s2,y,s2,o-1)
