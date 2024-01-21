@@ -1,48 +1,63 @@
-let t=6553
-bpm = 60
-qn = 6000 \ bpm
+let sbpm = 0
+let qn = 0
+let d1 = 0
+let d2 = 0
+let d4 = 0
+let d8 = 0
+let d16 = 0
+let d32 = 0
+let d64 = 0
 
-d1= qn * 4
-d2= qn * 2
-d4= qn
-d8= qn \ 2
-d16= qn \ 4
-d32= qn \ 8
-d64= qn \ 16
-
-print "1/1",d1
-print "1/2",d2
-print "1/4",d4
-print "1/8",d8
-print "1/16",d16 
-print "1/32",d32
-print "1/64",d64 
-
-
-dim hertz(84)
+dim freqtab(84)
 dim nts(7)
 
-nts(1)=10
-nts(2)=12
-nts(3)=1
-nts(4)=3
-nts(5)=5
-nts(6)=6
-nts(7)=8
+nts(1)=10 'b
+nts(2)=12 'c
+nts(3)=1 'c
+nts(4)=3 'd
+nts(5)=5 'e
+nts(6)=6 'f
+nts(7)=8 'g
 
-song$="16c6,16c6,32g6,32g6,32a6,32a6,32g6,8f6,16f6,16e6,16e6,32d6,32d6,32c6"
+test_song$="16c6,16c6,32g6,32g6,32a6,32a6,32g6,8f6,16f6,16e6,16e6,32d6,32d6,32c6"
 
-call init_hertz()
-call play_song()
+call set_bpm(60)
+
+call init_freq_tab()
+call play_song(test_song$)
 
 end
 
+proc set_bpm(bpm)
+    sbpm = bpm
+    '1/4 th note duration
+    qn = 6000 \ sbpm
+    'durations for notes
+    d1= qn * 4
+    d2= qn * 2
+    d4= qn
+    d8= qn \ 2
+    d16= qn \ 4
+    d32= qn \ 8
+    d64= qn \ 16
 
-proc play_song()
+    print "1/1",d1
+    print "1/2",d2
+    print "1/4",d4
+    print "1/8",d8
+    print "1/16",d16 
+    print "1/32",d32
+    print "1/64",d64 
+endproc
+
+proc play_song(song$)
     local p: local len : local f : local dur
     i=1
     p=1
+    'length of the song string
     len = len(song$)
+
+
 
     while p < len+1
         'skip commas'
@@ -57,16 +72,16 @@ proc play_song()
         if asc(d$) < asc("A")
             if asc(right$(d$,1)) < asc("A")
             '16,32,64 th
-                if right$(d$,1)="6" : dur = d16 : print "d16": endif
-                if right$(d$,1)="2" : dur = d32 : print "d32":endif
-                if right$(d$,1)="4" : dur = d64 : print "d64":endif
+                if right$(d$,1)="6" : dur = d16 : endif
+                if right$(d$,1)="2" : dur = d32 : endif
+                if right$(d$,1)="4" : dur = d64 : endif
                 p=p+2 
             else 
             '1,2,4,8 th
-                if left$(d$,1)="1" : dur = d1 : print "d1":endif
-                if left$(d$,1)="2" : dur = d2 : print "d2":endif
-                if left$(d$,1)="4" : dur = d4 : print "d4":endif 
-                if left$(d$,1)="8" : dur = d8 : print "d8":endif             
+                if left$(d$,1)="1" : dur = d1 : endif
+                if left$(d$,1)="2" : dur = d2 : endif
+                if left$(d$,1)="4" : dur = d4 : endif 
+                if left$(d$,1)="8" : dur = d8 : endif             
                 p=p+1
             endif
 
@@ -96,7 +111,7 @@ proc play_song()
 
         p=p+1
          
-        f=hertz(n)
+        f=freqtab(n)
         'play sound
         sound 0,f,dur
         p=p+1
@@ -105,20 +120,18 @@ proc play_song()
 
 endproc
 
-
-end_proc
-
-proc init_hertz()
+'copy frequencies to freqtab array
+proc init_freq_tab()
     local i : i=1
     local h : h=1
     while h <> 0 
-        read h : hertz(i)=h 
+        read h : freqtab(i)=h 
         i=i+1
     wend
 endproc
 
 
-
+'note frequencies
 'data 33, 35, 37, 39, 41, 44, 46, 49, 52, 55, 58, 62
 data 65, 69, 73, 78, 82, 87, 92, 98, 104, 110, 117, 123
 data 131, 139, 147, 156, 165, 175, 185, 196, 208, 220, 233, 247 
