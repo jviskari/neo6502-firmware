@@ -1,4 +1,8 @@
-let sbpm = 0
+let debug_print = false
+let song_bpm = 100
+let default_bpm=112
+let default_octave=3
+let default_duration=4
 let qn = 0
 let d1 = 0
 let d2 = 0
@@ -19,10 +23,13 @@ nts(5)=5 'e
 nts(6)=6 'f
 nts(7)=8 'g
 
-test_song$="16c6,16c6,32g6,32g6,32a6,32a6,32g6,8f6,16f6,16e6,16e6,32d6,32d6,32c6"
+test_song$="larry:d=4,o=5,b=112:8e,16p,8f,16p,8f#,16p,8g,16a,8e,8g,16p,8a,16p,16e,8g,16a,8g,8c.6,p,8a,16c6,8g#,8a,16p,8c6,16p,16g#,8a,16c6,8d6,8d#.6,16p,8c6,16p,8e6,16p,8e6,16p,8e6,16p,8e6,16p"
 
-call set_bpm(60)
+//test_song$="larry:d=4,o=5,b=112:8e,16p,8f,16p,8f#,16p,8g,16a,8e,8g,16p,8a,16p,16e,8g,16a,8g,8c.6,p,8a,16c6,8g#,8a,16p,8c6,16p,16g#,8a,16c6,8d6,8d#.6,16p,8c6,16p,8e6,16p,8e6,16p,8e6,16p,8e6,16p,8e6,16d#6,8d6,8c#.6,16p,8a,16p,8d#6,16e6,8d#6,16e6,8c6,8d6,16p,8c6,16p"
 
+
+
+call set_bpm(default_bpm)
 call init_freq_tab()
 call play_song(test_song$)
 
@@ -40,25 +47,52 @@ proc set_bpm(bpm)
     d16= qn \ 4
     d32= qn \ 8
     d64= qn \ 16
-
-    print "1/1",d1
-    print "1/2",d2
-    print "1/4",d4
-    print "1/8",d8
-    print "1/16",d16 
-    print "1/32",d32
-    print "1/64",d64 
+    if debug_print = true
+        print "1/1",d1
+        print "1/2",d2
+        print "1/4",d4
+        print "1/8",d8
+        print "1/16",d16 
+        print "1/32",d32
+        print "1/64",d64 
+    endif
 endproc
 
 proc play_song(song$)
-    local p: local len : local f : local dur
+    local p: local len : local f : local dur : local plen
     i=1
     p=1
     'length of the song string
     len = len(song$)
+  
 
+    'process part 1 - song name
+    plen=0
+    while mid$(song$,p,1)<>":"
+        p=p+1
+        plen=plen+1
+    wend
+    p=p+1 ' skip :
+    part1$=left$(song$,plen)
+    print "Song:",part1$
 
+    'process part 2 - default values
+    plen=0
+    p2start = p
 
+    while mid$(song$,p,1)<>":"
+        p=p+1
+        plen=plen+1
+    wend
+
+    part2$=mid$(song$,p2start,plen)
+
+    if debug_print=true
+        print "defaults:",part2$    
+    endif
+
+    'part 3 - note data
+     p=p+1
     while p < len+1
         'skip commas'
         while mid$(song$,p,1)=","
@@ -84,35 +118,63 @@ proc play_song(song$)
                 if left$(d$,1)="8" : dur = d8 : endif             
                 p=p+1
             endif
-
+        else 
+        ' use default
+                if default_duration=16 : dur = d16 : endif
+                if default_duration=32 : dur = d32 : endif
+                if default_duration=64 : dur = d64 : endif
+                if default_duration=1 : dur = d1 : endif
+                if default_duration=2 : dur = d2 : endif
+                if default_duration=4 : dur = d4 : endif 
+                if default_duration=8 : dur = d8 : endif             
         endif
 
         'get note
         nt$ = mid$(song$,p,1)
-        'get #
-        sharp$ = mid$(song$,p+1,1)
 
-        i = asc(nt$)-96
-        n=nts(i)
+        if nt$ <> "p"
+        'note
+            'get #
+            sharp$ = mid$(song$,p+1,1)
 
-        if sharp$="#"
-            n=n+1 'sharp note
-            p=p+1 'skip to next note
+            i = asc(nt$)-96    
+            n=nts(i)
+
+            if sharp$="#"
+                n=n+1 'sharp note
+                p=p+1 'skip to next note
+            endif
+
+            'get octave
+            oct$=mid$(song$,p+1,1) 
+
+            if oct$="1" : n = n  endif
+            if oct$="2" : n = n+12 endif
+            if oct$="3" : n = n+24 endif
+            if oct$="4" : n = n+36 endif
+            if oct$="5" : n = n+48 endif
+
+            if oct$=","
+                n = n + default_octave*12
+            endif
+        
+            f=freqtab(n)
+            p=p+1
+
+        else 
+        ' rest
+            f=0 
+            p=p+2 ' no octave after rest
         endif
 
-        'get octave
-        oct$=mid$(song$,p+1,1) 
-
-        if oct$="1" : n = n  endif
-        if oct$="2" : n = n+12 endif
-        if oct$="3" : n = n+24 endif
-        if oct$="4" : n = n+36 endif
-        if oct$="5" : n = n+48 endif
-
-        p=p+1
+        'check dot
+        dot$=mid$(song$,p+1,1)  
+        if  dot$="."
+            p=p+1
+        endif
          
-        f=freqtab(n)
         'play sound
+        print nt$,i,n,dur
         sound 0,f,dur
         p=p+1
 
@@ -132,7 +194,7 @@ endproc
 
 
 'note frequencies
-'data 33, 35, 37, 39, 41, 44, 46, 49, 52, 55, 58, 62
+data 33, 35, 37, 39, 41, 44, 46, 49, 52, 55, 58, 62
 data 65, 69, 73, 78, 82, 87, 92, 98, 104, 110, 117, 123
 data 131, 139, 147, 156, 165, 175, 185, 196, 208, 220, 233, 247 
 data 262, 277, 294, 311, 330, 349, 370, 392, 415, 440, 466, 494
