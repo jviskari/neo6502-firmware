@@ -1,7 +1,9 @@
 let debug_print = false
+let debug_note = true
+let debug_wait_note = true
 let song_bpm = 100
 let default_bpm=112
-let default_octave=3
+let default_octave=1
 let default_duration=4
 let qn = 0
 let d1 = 0
@@ -23,7 +25,7 @@ nts(5)=5 'e
 nts(6)=6 'f
 nts(7)=8 'g
 
-test_song$="larry:d=4,o=5,b=112:8e,16p,8f,16p,8f#,16p,8g,16a,8e,8g,16p,8a,16p,16e,8g,16a,8g,8c.6,p,8a,16c6,8g#,8a,16p,8c6,16p,16g#,8a,16c6,8d6,8d#.6,16p,8c6,16p,8e6,16p,8e6,16p,8e6,16p,8e6,16p"
+test_song$="larry:d=4,o=5,b=112:8e,16p,8f,16p,8f#,16p,8g,16a,8e,8g,16p"
 
 //test_song$="larry:d=4,o=5,b=112:8e,16p,8f,16p,8f#,16p,8g,16a,8e,8g,16p,8a,16p,16e,8g,16a,8g,8c.6,p,8a,16c6,8g#,8a,16p,8c6,16p,16g#,8a,16c6,8d6,8d#.6,16p,8c6,16p,8e6,16p,8e6,16p,8e6,16p,8e6,16p,8e6,16d#6,8d6,8c#.6,16p,8a,16p,8d#6,16e6,8d#6,16e6,8c6,8d6,16p,8c6,16p"
 
@@ -99,6 +101,21 @@ proc play_song(song$)
             p=p+1
         wend
 
+        if debug_note=true 
+            c$="-"
+            dbg_p = 0
+            while c$<>","
+                if dbg_p+p < len
+                    c$ =mid$(song$,p+dbg_p,1)
+                    dbg_p = dbg_p + 1 
+                else 
+                    c$=","
+                endif
+            wend
+
+            print mid$(song$, p, dbg_p)
+        endif
+
         'get note duration
         d$ = mid$(song$,p,2)
 
@@ -171,12 +188,18 @@ proc play_song(song$)
         dot$=mid$(song$,p+1,1)  
         if  dot$="."
             p=p+1
+            dur = dur + dur \ 2
         endif
          
         'play sound
-        print nt$,i,n,dur
+        'print nt$,i,n,dur
         sound 0,f,dur
         p=p+1
+    
+        if debug_wait_note=true
+            while notes(0)<>0
+            wend
+        endif
 
     wend
 
@@ -194,8 +217,8 @@ endproc
 
 
 'note frequencies
-data 33, 35, 37, 39, 41, 44, 46, 49, 52, 55, 58, 62
-data 65, 69, 73, 78, 82, 87, 92, 98, 104, 110, 117, 123
+'data 33, 35, 37, 39, 41, 44, 46, 49, 52, 55, 58, 62
+'data 65, 69, 73, 78, 82, 87, 92, 98, 104, 110, 117, 123
 data 131, 139, 147, 156, 165, 175, 185, 196, 208, 220, 233, 247 
 data 262, 277, 294, 311, 330, 349, 370, 392, 415, 440, 466, 494
 data 523, 554, 587, 622, 659, 698, 740, 784, 831, 880, 932, 988
