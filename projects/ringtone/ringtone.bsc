@@ -1,0 +1,128 @@
+let t=6553
+bpm = 60
+qn = 6000 \ bpm
+
+d1= qn * 4
+d2= qn * 2
+d4= qn
+d8= qn \ 2
+d16= qn \ 4
+d32= qn \ 8
+d64= qn \ 16
+
+print "1/1",d1
+print "1/2",d2
+print "1/4",d4
+print "1/8",d8
+print "1/16",d16 
+print "1/32",d32
+print "1/64",d64 
+
+
+dim hertz(84)
+dim nts(7)
+
+nts(1)=10
+nts(2)=12
+nts(3)=1
+nts(4)=3
+nts(5)=5
+nts(6)=6
+nts(7)=8
+
+song$="16c6,16c6,32g6,32g6,32a6,32a6,32g6,8f6,16f6,16e6,16e6,32d6,32d6,32c6"
+
+call init_hertz()
+call play_song()
+
+end
+
+
+proc play_song()
+    local p: local len : local f : local dur
+    i=1
+    p=1
+    len = len(song$)
+
+    while p < len+1
+        'skip commas'
+        while mid$(song$,p,1)=","
+            p=p+1
+        wend
+
+        'get note duration
+        d$ = mid$(song$,p,2)
+
+        'note duration
+        if asc(d$) < asc("A")
+            if asc(right$(d$,1)) < asc("A")
+            '16,32,64 th
+                if right$(d$,1)="6" : dur = d16 : print "d16": endif
+                if right$(d$,1)="2" : dur = d32 : print "d32":endif
+                if right$(d$,1)="4" : dur = d64 : print "d64":endif
+                p=p+2 
+            else 
+            '1,2,4,8 th
+                if left$(d$,1)="1" : dur = d1 : print "d1":endif
+                if left$(d$,1)="2" : dur = d2 : print "d2":endif
+                if left$(d$,1)="4" : dur = d4 : print "d4":endif 
+                if left$(d$,1)="8" : dur = d8 : print "d8":endif             
+                p=p+1
+            endif
+
+        endif
+
+        'get note
+        nt$ = mid$(song$,p,1)
+        'get #
+        sharp$ = mid$(song$,p+1,1)
+
+        i = asc(nt$)-96
+        n=nts(i)
+
+        if sharp$="#"
+            n=n+1 'sharp note
+            p=p+1 'skip to next note
+        endif
+
+        'get octave
+        oct$=mid$(song$,p+1,1) 
+
+        if oct$="1" : n = n  endif
+        if oct$="2" : n = n+12 endif
+        if oct$="3" : n = n+24 endif
+        if oct$="4" : n = n+36 endif
+        if oct$="5" : n = n+48 endif
+
+        p=p+1
+         
+        f=hertz(n)
+        'play sound
+        sound 0,f,dur
+        p=p+1
+
+    wend
+
+endproc
+
+
+end_proc
+
+proc init_hertz()
+    local i : i=1
+    local h : h=1
+    while h <> 0 
+        read h : hertz(i)=h 
+        i=i+1
+    wend
+endproc
+
+
+
+'data 33, 35, 37, 39, 41, 44, 46, 49, 52, 55, 58, 62
+data 65, 69, 73, 78, 82, 87, 92, 98, 104, 110, 117, 123
+data 131, 139, 147, 156, 165, 175, 185, 196, 208, 220, 233, 247 
+data 262, 277, 294, 311, 330, 349, 370, 392, 415, 440, 466, 494
+data 523, 554, 587, 622, 659, 698, 740, 784, 831, 880, 932, 988
+data 1047, 1109, 1175, 1245, 1319, 1397, 1480, 1568, 1661, 1760,1865, 1976
+data 2093,0
