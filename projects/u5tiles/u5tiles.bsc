@@ -1,0 +1,55 @@
+cls
+call load_gfx()
+call load_pal()
+call anim()
+
+
+end
+
+proc load_gfx()
+    gload"u5mage.gfx"
+endproc
+
+proc load_pal()
+    pal_addr=alloc(3*16)
+    load"mypal.rgb",pal_addr
+
+    local r : local g : local b : local i
+    i=0
+    
+    while i < 16
+        r = peek(pal_addr) : pal_addr = pal_addr + 1 
+        g = peek(pal_addr) : pal_addr = pal_addr + 1  
+        b = peek(pal_addr) : pal_addr = pal_addr + 1 
+
+        palette i,r,g,b
+        i = i+1
+    wend    
+endproc 
+
+proc anim()
+local id: id=0
+local tf : tf = 0
+local xp : xp = 100
+local dir : dir = 8
+repeat
+
+    if event(tf,50) 
+
+        rect solid ink 0 xp,100 to xp+16,100+16
+        id = id+1
+        if id = 3 then id = 0
+  
+        xp = xp+dir 
+
+        if xp > 300 then dir = -dir 
+        if xp < 50  then dir = -dir
+
+        image id to xp,100
+
+    endif
+
+until 0
+
+
+endproc
