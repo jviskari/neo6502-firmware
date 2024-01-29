@@ -1,0 +1,41 @@
+dim colors(6)
+
+ 'red, orange, yellow, green, blue, purple
+colors(1) = 1
+colors(2) = 11
+colors(3) = 3
+colors(4) = 2
+colors(5) = 4
+colors(6) = 5
+
+cls
+call setpal()
+call draw(5)
+end 
+
+
+proc setpal()
+    'let's tweak the default palette
+    'red
+    palette 1,255, 0, 0
+    'orange
+    palette 11,255, 165, 0
+    'yellow
+    palette 3,255, 255, 0
+    'green
+    palette 2,0, 128, 0
+    'blue
+    palette 4,0, 0, 255
+    'purple
+    palette 5,128, 0, 128
+endproc
+
+proc draw(size)
+
+    turtle clear 
+    for i = 0 to 150
+        pendown colors( 1+(i % 6)) 
+        forward size+i 
+        left 59 
+    next
+endproc
