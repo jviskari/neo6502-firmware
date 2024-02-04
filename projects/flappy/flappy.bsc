@@ -1,0 +1,45 @@
+
+let BIRD_GRAVITY=1
+let BIRD_JUMP_VEL=15
+
+let bird_vel_y = 0
+let bird_pos_y = 120 
+
+color = 1
+fc=5
+
+repeat
+    if event(t1,1):
+        call bird_tick(joypad(dx,dy))      
+    endif
+    
+until 0   
+
+print "EXIT"
+end
+
+proc bird_tick(btn)
+
+    rect ink 0 from 50,bird_pos_y to 66, bird_pos_y+16 
+
+    color = color + dx
+
+    fc=fc-1 
+    if fc < 0
+    if btn>0: 
+        bird_vel_y = bird_vel_y - BIRD_JUMP_VEL
+        fc=3
+    endif
+    endif
+
+    bird_vel_y= bird_vel_y + BIRD_GRAVITY
+    bird_pos_y= bird_pos_y + bird_vel_y
+
+    if bird_pos_y > 200 then 
+        bird_vel_y = 0
+    endif 
+
+    rect ink color from 50,bird_pos_y to 66, bird_pos_y+16 
+
+endproc
+
