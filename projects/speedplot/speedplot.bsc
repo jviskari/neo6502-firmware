@@ -1,0 +1,96 @@
+cls
+
+x=0
+y=0
+
+
+call assemble()
+call plot_basic() 
+call plot_asm()
+call plot_asm2()
+call plot_asm3()
+
+end
+
+proc plot_asm3()
+    for i = 0 to 20
+        read b 
+        poke i+$80,b 
+    next
+    sys $80
+endproc
+
+
+proc plot_asm2()
+    cls
+    x=0
+    y=0
+    sys asm_plot_full
+endproc
+
+proc plot_asm()
+    cls
+    for x=0 to 255 
+        for y=0 to 255
+            sys asm_plot
+        next
+    next   
+endproc
+
+
+proc plot_basic()
+    cls
+    for x=0 to 255 
+        for y=0 to 255
+            plot to x,y
+        next
+    next  
+endproc
+
+proc assemble()
+
+    asm_plot = alloc(255)
+    
+    for i = 0 to 0
+        p = asm_plot
+        o = i * 3
+
+        .start
+            stx $ff04
+            sty $ff06         
+            lda #5
+            sta $ff01
+            sta $ff00
+
+            rts
+    next
+
+    asm_plot_full = alloc(255)
+
+    for i = 0 to 0
+        p = asm_plot_full
+        o = i * 3
+
+        .lp
+
+        stx $ff04
+        sty $ff06         
+        lda #5
+        sta $ff01
+        sta $ff00
+
+        dex 
+        bne lp 
+        dey 
+        bne lp 
+        rts 
+
+    next
+
+
+endproc 
+
+
+data $8e, $04, $ff, $8c, $06, $ff, $a9, $05
+data $8d, $01, $ff, $8d, $00, $ff, $ca, $d0
+data $ef, $88, $d0, $ec, $60
