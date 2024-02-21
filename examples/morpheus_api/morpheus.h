@@ -31,26 +31,30 @@ struct __morpheus
             uint16_t p4p5;
             uint16_t p6p7;
         };
-        struct 
+        struct
         {
             uint16_t x1;
             uint16_t y1;
             uint16_t x2;
             uint16_t y2;
-        }line;
+        } line;
+
+        struct 
+        {
+            uint16_t reg;
+        } math;
+        
     };
 };
 
 #define NEO (*(struct __morpheus *)0xFF00)
 
-#define NEO_Command(command)   \
-    {                          \
-        NEO.cmd_grp = command; \
+#define NEO_Dispatch(group, function) \
+    {                                 \
+        NEO.fn = function;            \
+        NEO.cmd_grp = group;          \
     }
-#define NEO_SetFunc(function) \
-    {                         \
-        NEO.fn = function;    \
-    }
+
 #define NEO_IsBusy() (NEO.cmd_grp)
 #define NEO_GetError() (NEO.error)
 #define NEO_GetStatus() (NEO.status)
@@ -58,11 +62,17 @@ struct __morpheus
 /* Neo6502 Kernel API control codes (see documents/release/api.pdf) */
 
 // Console functions (Group 2)
-uint8_t NEO_CMD_CONSOLE = (uint8_t)0x02;   // API function group ID
-uint8_t NEO_FN_WRITE_CHAR = (uint8_t)0x06; // API function ID
-uint8_t NEO_FN_CURSOR_POS = (uint8_t)0x07; // API function ID
+#define NEO_CMD_CONSOLE ((uint8_t)0x02)   // API function group ID
+#define NEO_FN_WRITE_CHAR ((uint8_t)0x06) // API function ID
+#define NEO_FN_CURSOR_POS ((uint8_t)0x07) // API function ID
+
+// Math functions (Group 4)
+#define NEO_CMD_MATH  ((uint8_t)0x04))        // API function group ID
+#define NEO_FN_SIN ((uint8_t)19))            // API function ID
+#define NEO_FN_COS ((uint8_t)20))            // API function ID
 // Sound functions (Group 8)
-uint8_t NEO_CMD_SOUND = (uint8_t)0x08;       // API function group ID
-uint8_t NEO_FN_PLAY_SOUND = (uint8_t)0x05;   // API function ID
-uint8_t NEO_SOUND_CH_00 = (uint8_t)0x00;     // API function parameter ID
-uint8_t NEO_SOUND_EFFECT_06 = (uint8_t)0x06; // API function parameter ID
+
+#define NEO_CMD_SOUND ((uint8_t)0x08)       // API function group ID
+#define NEO_FN_PLAY_SOUND ((uint8_t)0x05)   // API function ID
+#define NEO_SOUND_CH_00 ((uint8_t)0x00)     // API function parameter ID
+#define NEO_SOUND_EFFECT_06 ((uint8_t)0x06) // API function parameter ID
