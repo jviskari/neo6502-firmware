@@ -26,13 +26,13 @@ COMMONSOURCES = $(wildcard $(IMPSRC)*.cpp)
 SOURCES = 	$(FRASRC)main.cpp $(FRASRC)gfx.cpp $(FRASRC)debugger.cpp $(FRASRC)beeper.cpp \
 			$(EMUSRC)core$(S)sys_processor.cpp  $(EMUSRC)core$(S)sys_debugger.cpp $(EMUSRC)core$(S)hardware.cpp \
 			$(EMUSRC)core$(S)6502.cpp \
-			$(EMUSRC)core$(S)serial_tcp.cpp \
+			$(EMUSRC)core$(S)serial_tcp_win.cpp \
 			$(COMMONSOURCES)
   			
 INCLUDES= -I ../include -I ../framework -I .. -I $(COMDIR)include
 
 all: 
-	x86_64-w64-mingw32-g++ -std=c++17 -fpermissive -Wall -D IBMPC -D INCLUDE_DEBUGGING_SUPPORT -o neo.exe $(SOURCES) $(INCLUDES) `x86_64-w64-mingw32/bin/sdl2-config --cflags --static-libs` -static-libgcc -static-libstdc++ 
+	x86_64-w64-mingw32-g++ -std=c++17 -fpermissive -Wall -D IBMPC -D INCLUDE_DEBUGGING_SUPPORT -o neo.exe $(SOURCES) $(INCLUDES) `x86_64-w64-mingw32/bin/sdl2-config --cflags --static-libs` -static-libgcc -static-libstdc++ -lws2_32 
 	$(CDEL) neowin.zip
 	zip neowin.zip neo.exe
 
